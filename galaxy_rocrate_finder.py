@@ -107,6 +107,17 @@ def download_workflow_with_pooch(workflow_info: dict):
         print(f"    ✗ Error downloading {workflow_info["filename"]}: {e}")
         return None
 
+def validate_galaxy_invocation_workflow(file_path):
+    """Validate that the downloaded file is a valid Galaxy workflow invocation."""
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        
+        invocation_data = json.loads(content)
+    except Exception as e:
+        print(f"      ⚠ Error validating workflow invocation: {e}")
+        return False
+        
 def validate_galaxy_workflow(file_path):
     """Validate that the downloaded file is a valid Galaxy workflow."""
     try:
@@ -147,15 +158,17 @@ def validate_galaxy_workflow(file_path):
 
 def main():
     """Main function."""
-    if len(sys.argv) != 2:
-        print("Usage: python rocrate_galaxy_finder.py <nanopub_uri>")
-        print("Example: python rocrate_galaxy_finder.py https://w3id.org/np/RAnqaMx3Ri3bR8yY3oiM-BeMJf8LPxidTSqyEpcHyXoLc")
+    if len(sys.argv) != 3:
+        print("Usage: python rocrate_galaxy_finder.py <nanopub_uri> <output_dir>")
+        print("Example: python rocrate_galaxy_finder.py https://w3id.org/np/RAnqaMx3Ri3bR8yY3oiM-BeMJf8LPxidTSqyEpcHyXoLc downloaded_rocrate")
         sys.exit(1)
     
     nanopub_uri = sys.argv[1]
-    
+    output_dir = sys.argv[2]
+
     # Initialize components
     session = requests.Session()
+    
     
     # Initialize ROHub
     # Check if HOME environment variable exists
@@ -190,7 +203,6 @@ def main():
         print(f"  • {doi}")
     
     # Search for workflows in each DOI
-    all_workflows = []
     for doi in supporting_dois:
         print(f"\nAnalyzing DOI: {doi}")
         
@@ -210,55 +222,14 @@ def main():
                     searcher = ROHubROCrateSearcher()
                     searcher.authenticate_rohub(username=rohub_user, password=rohub_pwd)
                     print(f"Analyzing ROHub Research Object: {rohub_id}")
-                    # Search for workflows
-                    workflows = searcher.search_workflows_in_ro(rohub_id)
-                    # Display results
-                    print("FOUND WORKFLOWS ", workflows) 
-                    if workflows:
-                        print(f"\n✓ Found {len(workflows)} Galaxy workflow(s):")
-                        # find urls
-                        download_workflows_info = searcher.get_workflows_download_info(rohub_id, workflows)
-                        all_workflows.extend(download_workflows_info)
-                    else:
-                        print("\n✗ No Galaxy workflows found")
+                    # Download RO-Crate
+                    searcher.download_rocrate(rohub_id, output_dir)
             else:
                 print(f"  ✗ Failed to resolve DOI: {response.status_code}")
                 
         except Exception as e:
             print(f"  ✗ Error resolving DOI: {e}")
     
-    # Download workflows
-    
-    print(f"\n📥 Downloading {len(all_workflows)} Galaxy workflow(s)...")
-    downloaded_files = []
-    
-    for i, workflow in enumerate(all_workflows, 1):
-        print(workflow)
-        print(f"\n{i}. {workflow["filename"]}")
-        print(f"   URL: {workflow["url"]}")
-        
-        local_path = download_workflow_with_pooch(workflow)
-        if local_path:
-            downloaded_files.append({
-                'workflow': workflow,
-                'local_path': local_path
-            })
-            validate_galaxy_workflow(local_path)
-    
-    # Final summary
-    print(f"\n" + "="*70)
-    print(f"📊 SUMMARY")
-    print(f"="*70)
-    print(f"Nanopub: {nanopub_uri}")
-    print(f"Supporting DOIs: {len(supporting_dois)}")
-    print(f"Galaxy workflows found: {len(all_workflows)}")
-    print(f"Successfully downloaded: {len(downloaded_files)}")
-    
-    if all_workflows:
-        print(f"\n🔬 Found Galaxy Workflows:")
-        for workflow in all_workflows:
-            print(f"  • {workflow["filename"]}")
-            print(f"    Source: {workflow["url"]}")
-            
+
 if __name__ == "__main__":
     main()
