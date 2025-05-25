@@ -22,3 +22,15 @@ python prepare_inputs_and_parameters.py downloaded_rocrate/d5430aa5-7a8b-44fe-8d
 ```
 python bioblend_workflow.py
 ```
+
+## Step 4: Generate Markdown for new RO-Crate (optional)
+
+```
+python extract_md_from_galaxy_rocrate.py
+```
+
+## Step 5: Fork initial RO in Rohub and archive or snapshot newly generated RO-Crate (optional)
+
+TBD
+
+
