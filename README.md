@@ -82,10 +82,6 @@ The resulting figure is shown below:
 
 ![Annual percentage for population in Germnay from 1950 to 2025](stripes_germany_population_1950-2025.png)
 
-From this Figure, we can create a new AIDA sentence with supporting material (RO-Crate). For example, the corresponding AIDA sentence could be:
-
-*Germany’s population growth has varied over time, reflecting key historical events. Periods of increase, such as the post-war baby boom and labor migration in the 1960s, contrast with years of stagnation or decline, especially after reunification. More recent rises are linked to immigration and refugee inflows. The trend reveals how population change closely mirrors social and political shifts across decades.*
-
 ## Step 6: Create RO-Crate and archive or snapshot in ROHub (optional)
 
 We can create a RO-Crate and then archive it in ROHub:
@@ -94,4 +90,11 @@ We can create a RO-Crate and then archive it in ROHub:
 python create_rocreate_rohub.py --galaxy_url https://usegalaxy.eu  --galaxy_user_key $GALAXY_API_KEY --history-id xxxxxx
 ```
 
+## Step 7: Create new nanopublication related to the new results (optional)
 
+**From the Figure and datasets we analysed, we can create a new AIDA sentence with supporting material (RO-Crate). For example, the corresponding AIDA sentence could be:
+
+*Germany’s population growth has varied over time, reflecting key historical events. Periods of increase, such as the post-war baby boom and labor migration in the 1960s, contrast with years of stagnation or decline, especially after reunification. More recent rises are linked to immigration and refugee inflows. The trend reveals how population change closely mirrors social and political shifts across decades.*
+**
+
+This AIDA sentence can then be published in [Nanodash AIDA Claims](https://nanodash.knowledgepixels.com/publish?19&template=https://w3id.org/np/RA4fmfVFULMP50FqDFX8fEMn66uDF07vXKFXh_L9aoQKE&template-version=latest)
