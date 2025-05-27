@@ -5,9 +5,10 @@ Example to demonstrate executable nano publications:
 
 *Freiburg's temperature anomaly data (1950-2019) was plotted with a replicable workflow as warming stripes, revealing a marked shift from blue (colder) to red (warmer) that demonstrates accelerating local warming.*
 
-- This nanopublication is an AIDA sentence that is supported by a figure (see below) and associted dataset and workflow:
+- This nanopublication is an AIDA sentence that is supported by a figure (see below) and associated dataset and workflow:
 
 ![Warming Stripes in Paris from 1950 to 2019](stripes_paris_1950-2019.png)
+
 
 ## Step 1: Get the workflow from an executable nanopublication
 
@@ -16,6 +17,8 @@ python galaxy_rocrate_finder.py https://w3id.org/np/RAnqaMx3Ri3bR8yY3oiM-BeMJf8L
 ```
 
 If the rocrate is found it is downloaded in `downloaded_rocrate`.
+
+The workflow we will execute is shown below:
 
 ![Galaxy Workflow for running Warming Stripes](Workflow-Galaxy.png)
 
