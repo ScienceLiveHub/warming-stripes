@@ -4,6 +4,7 @@ from rocrate.rocrate import ROCrate
 import json
 import zipfile
 from pathlib import Path
+import sys
 
 def extract_galaxy_workflow_info(rocrate_zip_path, output_format='console'):
     """
@@ -315,7 +316,12 @@ def extract_galaxy_workflow_info(rocrate_zip_path, output_format='console'):
 
 if __name__ == "__main__":
     # Use with your climate.rocrate.zip file
-    rocrate_path = "climate.rocrate.zip"
+    if len(sys.argv) != 2:
+        print("Usage: python extract_md_from_galaxy_rocrate.py <rocrate.zip>")
+        print("Example: python extract_md_from_galaxy_rocrate.py climate.rocrate.zip")
+        sys.exit(1)
+    
+    rocrate_path = sys.argv[1]
     
     try:
         # Generate console output

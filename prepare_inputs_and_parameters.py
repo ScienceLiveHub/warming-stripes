@@ -7,6 +7,8 @@ from pathlib import Path
 import sys
 import os
 import ast
+import yaml
+import shutil
 
 # importing the zipfile module
 from zipfile import ZipFile
@@ -115,21 +117,49 @@ def get_invocation_info(filename):
         output_datasets = []
         workflow_parameters = []
 
-def prepare_workflow_file(input_filenames, workflow_filenames, workflow_params, output_filenames, outputdir, workflow_run_filename):
+def prepare_jobfile(ifilenames, ofilenames, workflow, jobfile, odir, 
+                              rjob_filename, rworkflow_filename):
     try:
-        # print(input_filenames, workflow_params, output_filenames, outputdir, workflow_run_filename)
-        input_filenames_with_output_dir = []
-        for input_filename in input_filenames:
-            input_filenames_with_output_dir.append(outputdir + "/" + input_filename)
-             
-        workflow_run = {"inputs": input_filenames_with_output_dir, "workflow": workflow_filenames[0], "params": workflow_params}
-        with open(workflow_run_filename, "w") as f:
-            json.dump(workflow_run, f, indent=4)
-        print(json.dumps(workflow_run, indent=4)) 
+        print(workflow)
+        shutil.copy(workflow, rworkflow_filename)
+        print(f"Workflow copied successfully in {rworkflow_filename}")
         
+        # Set input filenames
+        ifilenames_with_odir = []
+        for ifilename in ifilenames:
+            ifilenames_with_odir.append(odir + "/" + ifilename)
+        
+        # Set output filenames
+        ofilenames_with_odir = []
+        for ofilename in ofilenames:
+            ofilenames_with_odir.append(odir + "/" + ofilename)
+
+        # Read jobfile (yml)
+        with open(jobfile, 'r') as f:
+            data_jobfile = yaml.load(f, Loader=yaml.SafeLoader)[0] # Assume one element in the returned list
+
+            job_section = data_jobfile.get('job', {})
+            output_section = data_jobfile.get('outputs', {})
+            print("Reading job section")
+            for key, value in job_section.items():
+                if isinstance(value, dict) and 'path' in value:
+                    # You could add extra checks here, e.g., value['class'] == 'File'
+                    print(f"Updating path under key: {key} and value: {value}")
+                    if value["class"] == "File":
+                        value["path"] = ifilenames_with_odir.pop(0)
+                else:
+                    print("Parameter: ", key)
+
+            for key, value in output_section.items():
+                if isinstance(value, dict) and 'path' in value:
+                    print(f"Updating path under key: {key} and value: {value}")
+                    value["path"] = ofilenames_with_odir.pop(0)
+            
+            with open(rjob_filename, 'w') as f:
+                yaml.dump(job_section, f, sort_keys=False)
+            
     except Exception as e:
-        print(f"Error writing invocation worklfow run file: {e}")
-    
+        print(f"Error writing job file: {e}")
 
 
 if __name__ == "__main__":
@@ -145,6 +175,7 @@ if __name__ == "__main__":
         workflows = []
         invocations = []
         datasets = []
+        jobfiles = []
         # unloading the *.zip and creating a zip object
         with ZipFile(rocrate_path, 'r') as zObject:
         # Extracting all the members of the zip 
@@ -154,18 +185,21 @@ if __name__ == "__main__":
             workflows = find_files_os_walk(output_dir, ".ga")
             invocations = find_files_os_walk(output_dir, "invocation_attrs.txt")
             datasets = find_files_os_walk(output_dir, "datasets_attrs.txt")
+            jobparams = find_files_os_walk(output_dir, "jobs_attrs.txt")
+            jobfiles = find_files_os_walk(output_dir, ".yml")
 
-        for invocation in invocations:    
-            input_datasets, actual_params, workflow_params, output_datasets = get_invocation_info(invocation)
+        print("Extracting information from invocation attribute file")
+        # we assume one single invocation file. If more, we process the first one only.
+        input_datasets, actual_params, workflow_params, output_datasets = get_invocation_info(invocations[0])
 
-        for dataset in datasets:    
-            input_filenames, output_filenames = get_datasets_info(dataset, input_datasets, output_datasets)
-        
-        print("workflow: ", workflows)
-        #print("inputs: ", input_filenames)
-        #print("parameters used for running the workflow: ", workflow_params)
-        #print("outputs: ", output_filenames)        
-        prepare_workflow_file(input_filenames, workflows, workflow_params, output_filenames, output_dir, "workflow_input_params.json")
+        print("Extracting information from dataset attribute file")
+        # We assume one single datasets_attrs.txt file
+        input_filenames, output_filenames = get_datasets_info(datasets[0], input_datasets, output_datasets)
+
+        print("Extracting information from job attribute file")    
+        # We assume one single jobfile.      
+        prepare_jobfile(input_filenames, output_filenames, workflows[0], jobfiles[0], output_dir, 
+                              "workflow_input_params.yml", "workflow.ga")
         
     except FileNotFoundError:
         print(f"Error: {rocrate_path} not found")
