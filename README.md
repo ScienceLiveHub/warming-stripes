@@ -104,6 +104,8 @@ python extract_md_from_galaxy_rocrate.py germany.rocrate.zip germany.rocrate.md
 python archive2rohub.py germany.rocrate.zip --md germany.rocrate.md 
 ```
 
+The new workflow execution can then be archived for instance in Zenodo, ROHub or Workflowhub.eu: https://doi.org/10.48546/WORKFLOWHUB.WORKFLOW.1382.1
+
 ## Step 9: Create new nanopublication related to the new results (optional)
 
 From the Figure and datasets we analysed, we can create a new AIDA sentence with supporting material (RO-Crate). For example, the corresponding AIDA sentence could be:
@@ -112,3 +114,5 @@ From the Figure and datasets we analysed, we can create a new AIDA sentence with
 
 
 This AIDA sentence can then be published in [Nanodash AIDA Claims](https://nanodash.knowledgepixels.com/publish?19&template=https://w3id.org/np/RA4fmfVFULMP50FqDFX8fEMn66uDF07vXKFXh_L9aoQKE&template-version=latest)
+
+The resulting nanopublication with the AIDA sentence and workflow execution is available at: https://w3id.org/np/RAJzZ8p6LBoe9D8ViX9DP2IIqZdxxfh-cQkBW3nfsYCzM
