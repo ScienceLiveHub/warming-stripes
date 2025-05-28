@@ -316,12 +316,16 @@ def extract_galaxy_workflow_info(rocrate_zip_path, output_format='console'):
 
 if __name__ == "__main__":
     # Use with your climate.rocrate.zip file
-    if len(sys.argv) != 2:
-        print("Usage: python extract_md_from_galaxy_rocrate.py <rocrate.zip>")
-        print("Example: python extract_md_from_galaxy_rocrate.py climate.rocrate.zip")
+    if len(sys.argv) < 2:
+        print("Usage: python extract_md_from_galaxy_rocrate.py <rocrate.zip> <generated_rocrateinfo.md>")
+        print("Example: python extract_md_from_galaxy_rocrate.py climate.rocrate.zip climate_rocrateinfo.md")
         sys.exit(1)
     
     rocrate_path = sys.argv[1]
+    if len(sys.argv) == 3:
+        md_path = sys.argv[2]
+    else:
+        md_path = "workflow_rerun_info.md"
     
     try:
         # Generate console output
@@ -333,7 +337,7 @@ if __name__ == "__main__":
         workflow_info_md = extract_galaxy_workflow_info(rocrate_path, output_format='markdown')
         
         # Save markdown to file
-        with open('workflow_rerun_info.md', 'w') as f:
+        with open(md_path, 'w') as f:
             f.write(workflow_info_md['markdown'])
         
         print(f"\n✅ Markdown saved to: workflow_rerun_info.md")

@@ -42,7 +42,7 @@ This step assumes the tools used in the workflow are available in the selected G
 ## Step 4: Generate Markdown for new RO-Crate (optional)
 
 ```
-python extract_md_from_galaxy_rocrate.py
+python extract_md_from_galaxy_rocrate.py climate.rocrate.zip climate.rocrate.md
 ```
 
 ## Step 5: Change inputs and rerun the workflow
@@ -82,15 +82,29 @@ The resulting figure is shown below:
 
 ![Annual percentage for population in Germnay from 1950 to 2025](stripes_germany_population_1950-2025.png)
 
-## Step 6: Create RO-Crate and archive or snapshot in ROHub (optional)
+## Step 6: Create RO-Crate (optional)
 
-We can create a RO-Crate and then archive it in ROHub:
+We can create a RO-Crate:
 
 ```
-python create_rocreate_rohub.py --galaxy_url https://usegalaxy.eu  --galaxy_user_key $GALAXY_API_KEY --history-id xxxxxx
+python create_rocreate.py --galaxy_url https://usegalaxy.eu  --galaxy_user_key $GALAXY_API_KEY --invocation-id 1d493693e187e30f --rocrate germany.rocrate.zip
 ```
 
-## Step 7: Create new nanopublication related to the new results (optional)
+
+## Step 7: Generate Markdown for new RO-Crate (optional)
+
+```
+python extract_md_from_galaxy_rocrate.py germany.rocrate.zip germany.rocrate.md
+```
+
+## Step 8: Archive in ROHub (or Zenodo):
+
+
+```
+python archive2rohub.py germany.rocrate.zip --md germany.rocrate.md 
+```
+
+## Step 9: Create new nanopublication related to the new results (optional)
 
 From the Figure and datasets we analysed, we can create a new AIDA sentence with supporting material (RO-Crate). For example, the corresponding AIDA sentence could be:
 
